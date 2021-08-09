@@ -13,7 +13,7 @@ dfsheet = pandas.read_excel(r"C:\Users\Uzair\Documents\warzonedropdata.xlsx", sh
 
 Flight = ["Security area","living quarters","factory","headquarters","control center","shore ","prison block","harbour","chemical engineering","decon zone","bioweapon labs"]
 Circle = ["Security area in circle","living quarters in circle","factory in circle","headquarters in circle","control center in circle","shore in circle","prison block in circle","harbour in circle","chemical engineering in circle","decon zone in circle","bioweapon labs in circle"]
-Land = ["Die on Landing?","Land in Circle?","Outcome"]
+Land = ["Die on Landing?","Outcome"]
 
 
 
@@ -46,30 +46,26 @@ graph.write_png(r"C:\Users\Uzair\Documents\mydecisiontree.png")
 
 img=pltimg.imread(r'C:\Users\Uzair\Documents\mydecisiontree.png')
 imgplot = plt.imshow(img)
+
+######to show decision tree uncomment below##########
 #plt.show()
 
 ##Prediction##
+
 d = dfsheet[1]
 input = list(d[features].iloc[0])
+output = dtree.predict([input])
+
+# function to return key for any value
+def get_key(val):
+    for key, value in labels.items():
+        if val == value:
+            return key
+
+print(get_key(int(output)))
+
 print(input)
-print(dtree.predict([input]))
 
 
 
 
-
-
-
-""" =
-living quarters =
-factory =
-headquarters =
-control center =
-shore =
-prison block
-harbour
-chemical engineering
-decon zone
-bioweapon labs =
-print(dtree.predict([[, 10, 7, 1]]))
-print()"""
