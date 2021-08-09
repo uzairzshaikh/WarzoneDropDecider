@@ -9,10 +9,11 @@ import os
 os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz2.38/bin/'
 
 df = pandas.read_excel(r"C:\Users\Uzair\Documents\warzonedropdata.xlsx",engine='openpyxl')
+dfsheet = pandas.read_excel(r"C:\Users\Uzair\Documents\warzonedropdata.xlsx", sheet_name = [1],engine='openpyxl')
 
 Flight = ["Security area","living quarters","factory","headquarters","control center","shore ","prison block","harbour","chemical engineering","decon zone","bioweapon labs"]
 Circle = ["Security area in circle","living quarters in circle","factory in circle","headquarters in circle","control center in circle","shore in circle","prison block in circle","harbour in circle","chemical engineering in circle","decon zone in circle","bioweapon labs in circle"]
-Land = ["Die on Landing?","Land in Circle?","where did you land?"]
+Land = ["Die on Landing?","Land in Circle?","Outcome"]
 
 
 
@@ -33,7 +34,7 @@ dataframe["where did you land?"] = dataframe["where did you land?"].map(labels)
 ###Features###
 features = Flight + Circle + Land
 X =  dataframe[features]
-y = dataframe['Outcome']
+y = dataframe['where did you land?']
 
 
 ##Plot Decision Tree##
@@ -45,13 +46,21 @@ graph.write_png(r"C:\Users\Uzair\Documents\mydecisiontree.png")
 
 img=pltimg.imread(r'C:\Users\Uzair\Documents\mydecisiontree.png')
 imgplot = plt.imshow(img)
-plt.show()
-
-
+#plt.show()
 
 ##Prediction##
+d = dfsheet[1]
+input = list(d[features].iloc[0])
+print(input)
+print(dtree.predict([input]))
 
-"""Security area =
+
+
+
+
+
+
+""" =
 living quarters =
 factory =
 headquarters =
