@@ -1,10 +1,8 @@
 import pygame
 import sys
-
-pygame.init()
-pygame.font.init()
-
-
+import math
+import pandas as pd
+import openpyxl
 
 
 background_colour = (255,255,255)
@@ -19,6 +17,16 @@ pygame.display.flip()
 running = True
 
 
+
+### import excel file
+df = pd.read_excel(r'C:\Users\Uzair\Documents\GUItestdata.xlsx',engine='openpyxl')
+
+print(df)
+
+
+
+
+
 def RIGHTMOVE(keys_pressed, RIGHTPLAYER):  # MOVEMENT OF RIGHT PLAYER
   if keys_pressed[pygame.K_LEFT]:
     RIGHTPLAYER.x -= VEL
@@ -30,23 +38,16 @@ def RIGHTMOVE(keys_pressed, RIGHTPLAYER):  # MOVEMENT OF RIGHT PLAYER
     RIGHTPLAYER.y += VEL
 
 
-"""def LEFTMOVE(keys_pressed, LEFTPLAYER):  # MOVEMENT OF LEFT PLAYER
-  #if keys_pressed[pygame.K_a] and LEFTPLAYER.x > 0:
-  #  LEFTPLAYER.x -= VEL
-  if keys_pressed[pygame.K_d] and LEFTPLAYER.x < width - PLAYERWIDTH:
-    LEFTPLAYER.x += VEL
-  if keys_pressed[pygame.K_w] and LEFTPLAYER.y > 0:
-    LEFTPLAYER.y -= VEL
-  if keys_pressed[pygame.K_s] and LEFTPLAYER.y < height - PLAYERHEIGHT:
-    LEFTPLAYER.y += VEL"""
-
 
 def draw(WIN):
   WIN.blit(bg, (0, 0))
   WIN.blit(circle, (RIGHTPLAYER))
-  WIN.blit(new_image, rect)
+ # pygame.draw.rect(WIN, (0,0,0), rectangle)
+  pygame.draw.line(WIN,(255,255,255),startline,endline,10)
   #midpointsquare
   pygame.draw.rect(WIN, (255,0,0), pygame.Rect(a-5,b, 10, 10))
+
+
 
 
 VEL = 10
@@ -57,10 +58,10 @@ RIGHTPLAYER = pygame.Rect(RIGHTX, RIGHTY, PLAYERWIDTH, PLAYERHEIGHT)
 
 rot = 0
 rot_speed = 4
-
-x=10
+x=10     ### x and y are size of line
 y=3000
 image_orig = pygame.Surface((x, y))
+
 image_orig.set_colorkey((0,0,0))
 image_orig.fill((255,255,255))
 image = image_orig.copy()
@@ -69,21 +70,34 @@ rect = image.get_rect()
 a=width // 2
 b=height // 2
 rect.center = (a ,b)
-
-
-
+t=0
 
 
 
 while True:
   clock = pygame.time.Clock()
   clock.tick(FPS)
+  keys_pressed = pygame.key.get_pressed()
   for event in pygame.event.get():
     if event.type == pygame.QUIT:
       pygame.quit()
       sys.exit()
+    elif keys_pressed[pygame.K_RETURN]:
+      row = []
+      #creating row to add to excel file
+      for i in range(11):
+        if i in list:
+          row.append(1)
+        else:
+          row.append(0)
 
-  keys_pressed = pygame.key.get_pressed()
+      df.loc[len(df.index)] = row
+      df.to_excel(r"C:\Users\Uzair\Documents\GUItestdata.xlsx",sheet_name = "Line", index = False)
+      print(df)
+      pygame.quit()
+      sys.exit()
+
+
   RIGHTMOVE(keys_pressed, RIGHTPLAYER)
  # LEFTMOVE(keys_pressed, LEFTPLAYER)
 
@@ -92,9 +106,10 @@ while True:
   #rotation of line
   if keys_pressed[pygame.K_q]:
     rot = (rot + rot_speed) % 360
+    t-=math.pi/36
   if keys_pressed[pygame.K_e]:
     rot = (rot - rot_speed) % 360
-
+    t+=math.pi/36
   #movement of line
   if keys_pressed[pygame.K_a]:
     a=a-10
@@ -109,15 +124,46 @@ while True:
     b = b + 10
     old_center = (a, b)
 
-
-
   # rotating the orignal image
-  new_image = pygame.transform.rotate(image_orig, rot)
-  rect = new_image.get_rect()
+
   # set the rotated rectangle to the old center
   rect.center = old_center
 
+  startline = (2000*math.cos(t)+a,2000*math.sin(t)+b)
+  endline = (2000*math.cos(t+(math.pi))+a,2000*math.sin(t+(math.pi))+b)
 
 
+
+
+
+
+
+  Shore = pygame.Rect(350, 320, 200, 200)
+  Construction = pygame.Rect(200, 500, 200, 220)
+  Harbour = pygame.Rect(700, 500, 200, 220)
+  Prison = pygame.Rect(500, 400, 250, 250)
+  Decon = pygame.Rect(550, 210, 330, 120)
+  Chemical= pygame.Rect(880, 210, 150, 280)
+  Bioweapons = pygame.Rect(800, 80, 200, 140)
+  Headquarters = pygame.Rect(400, 650, 200, 140)
+  Factory = pygame.Rect(580, 720, 150, 240)
+  Living = pygame.Rect(280, 780, 250, 240)
+  Security = pygame.Rect(20, 780, 250, 240)
+
+  list = []
+  clist = []
+  sites = [Security,Living,Factory,Headquarters,Construction,Shore,Prison,Harbour,Chemical,Decon,Bioweapons]
+
+  for count, x in enumerate(sites):
+    clipped_line = x.clipline(startline, endline)
+    if clipped_line:
+      list.append(count)
+
+
+  print(clist)
   draw(WIN)
+
+
+
+
   pygame.display.update()
